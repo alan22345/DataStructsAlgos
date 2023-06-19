@@ -81,4 +81,40 @@ def mySet(A):
     A = A[:write_index]
     return A
 
-print(mySet([1,1,1,2,2,3,4,5,6,7,7,7]))
+# print(mySet([1,1,1,2,2,3,4,5,6,7,7,7]))
+
+# buy and sell a stock at the highest price
+# given an array with a bunch of stock prices find when it is most profittable to buy and sell
+
+def buyAndSellStock(prices):
+    minPriceSoFar, maxProfit = float('inf'),0.0
+    for price in prices:
+        maxProfitToday = price - minPriceSoFar
+        maxProfit = max(maxProfit,maxProfitToday)
+        minPriceSoFar = min(minPriceSoFar,price)
+    return maxProfit
+
+# same thing but buy and sell twice
+
+def buyAndSellTwice(prices):
+    maxTotalProfit, minPriceSoFar = 0.0, float('inf')
+    firstBuySellProfits = [0] * len(prices)
+
+    for i, price in enumerate(prices):
+        minPriceSoFar = min(minPriceSoFar, price)
+        maxTotalProfit = max(maxTotalProfit, price - minPriceSoFar)
+        firstBuySellProfits[i] = maxTotalProfit
+    
+    maxPriceSoFar = float('-inf')
+    reversedPrices = reversed(list(enumerate(prices[1:],1)))
+    for i, price in reversedPrices:
+        maxPriceSoFar = max(maxPriceSoFar, price)
+        maxTotalProfit = max(
+            maxTotalProfit,
+            maxPriceSoFar - price + firstBuySellProfits[i-1]
+        )
+
+    return maxTotalProfit
+
+prices = [12,11,13,9,12,8,14,13,15]
+print(buyAndSellTwice(prices))
