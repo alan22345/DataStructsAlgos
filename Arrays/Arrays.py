@@ -49,7 +49,36 @@ def plus_one(A):
         A.append(1)
     return A
 
-print(plus_one([2,0,0,0]))
+# print(plus_one([2,0,0,0]))
 
 # we can use a similar algo with a few extra steps for multiplying numbers 
 
+# for a game where a list is a board, you can advance only as far as the number in the array that
+# you land on says e.g. for an array[3,3,1,0,2,0,1] we can go A[0], A[1], A[4], A[6] and we win by 
+# reaching the end
+# write a program that takes an array of ints, and returns whether its possible to advance to the 
+# last tile and the maxing you can advance if you cant reach the final tile
+
+def canReachEnd(A):
+    furthest_reach_so_far, last_index = 0, len(A) - 1
+    i = 0
+    while i <= furthest_reach_so_far and furthest_reach_so_far < last_index:
+        furthest_reach_so_far = max(furthest_reach_so_far, A[i] + i)
+        print(furthest_reach_so_far)
+        i += 1
+    return furthest_reach_so_far >= last_index 
+
+b = [3,3,1,0,2,0,1]
+# print(canReachEnd(b))
+
+# create a set out of a list 
+def mySet(A):
+    write_index = 1
+    for i in range(1,len(A)):
+        if A[write_index - 1] != A[i]:
+            A[write_index] = A[i]
+            write_index += 1
+    A = A[:write_index]
+    return A
+
+print(mySet([1,1,1,2,2,3,4,5,6,7,7,7]))
