@@ -117,4 +117,30 @@ def buyAndSellTwice(prices):
     return maxTotalProfit
 
 prices = [12,11,13,9,12,8,14,13,15]
-print(buyAndSellTwice(prices))
+# print(buyAndSellTwice(prices))
+
+# A[0] >= A[1] <= A[2] >= A[3]
+def snake(A):
+    for i in range(len(A)):
+        A[i:i+2] = sorted(A[i:i + 2], reverse=i % 2)
+    return A
+
+# print(snake(prices))
+
+# enumerate all primes to n
+
+def primes(n):
+    primes = []
+    isPrime = [False,False] + [True] * (n-1)
+
+    for p in range(2,n+1):
+        if isPrime[p]:
+            primes.append(p)
+            for i in range(p,n+1,p):
+                isPrime[i] = False
+    return primes
+
+# given an array A and a permutation P apply P to A
+
+def permMeUp(A,P):
+    
