@@ -1,3 +1,5 @@
+import random
+import itertools
 # reorder for even first
 
 def even_odd (A) :
@@ -142,5 +144,102 @@ def primes(n):
 
 # given an array A and a permutation P apply P to A
 
-def permMeUp(A,P):
-    
+def permMeUp(P,A):
+    for i in range(len(A)):
+        next = i
+        while P[next] >= 0:
+            A[i], A[P[next]] = A[P[next]], A[i]
+            temp = P[next]
+            P[next] -= len(P)
+            next = temp
+    P[:] = [a + len(P) for a in P]
+    return A
+perm = [3,2,1,0]
+a = [0,1,2,3]
+# print(permMeUp(perm,a))
+
+# find the next smallest permutation of a number that has been applied to a list 
+# e.g. [1,2,3,4,5] (12345) next perm would be 12354
+
+def nextPermutation(A):
+    # find first entry thats smaller than the entry after it
+    inversionPoint = len(A) - 2
+    while(inversionPoint >= 0 and A[inversionPoint] <= A[inversionPoint + 1]):
+        inversionPoint -= 1
+    if inversionPoint == -1:
+        return [] # last permutation
+
+    # swap the first entry after the inversion that is larger than the value of inversion
+    # Since entries in perm are decreasing after inversion point, if we search backwards 
+    # the first entry larger than inversion point is the entry to swap with 
+    for i in reversed(range(inversionPoint + 1, len(A))):
+        if A[i] > A[inversionPoint]:
+            A[inversionPoint], A[i] = A[i], A[inversionPoint]
+            break
+    # reverse all entries after inversion point
+    A[inversionPoint + 1:] = reversed(A[inversionPoint + 1:])
+    return A
+
+# random subset of k from list A 
+
+def subset(k, A):
+    for i in range(k):
+        r = random.randint(i, len(A) - 1)
+        A[i],A[r] = A[r],A[i]
+    return A[:k]
+ranSet = [1,2,3,4,5,6,7]
+
+# print(subset(5,ranSet))
+
+# Design program that takes input size k and reads packets continuously maintaining a 
+# uniform random subset of size k of the read packet
+
+def randomSubset(it, k):
+    samplingResults = list(itertools.islice(it,k))
+    numSeenSoFar = k
+    for x in it:
+        numSeenSoFar += 1
+        idToReplace = random.randrange(numSeenSoFar)
+    if idToReplace < k:
+        samplingResults[idToReplace] = x
+    return samplingResults
+
+# create a uniformly rnadom permutations of range(0,n) given a random number 
+# generator that returns integers in set 0,...,n-1 with equal probability 
+# use a few calls to it as possbile
+
+def computeRandomPermutation(n):
+    permutation = list(range(n))
+    permutation = subset(n,permutation)
+    return permutation
+
+# print(computeRandomPermutation(7))
+def computeRandomSubset(n,k):
+    changedElements = {}
+    for i in range(k):
+        randId = random.randrange(i,n)
+        randIdMapped = changedElements.get(randId,randId)
+        iMapped = changedElements.get(i,i)
+        changedElements[randId] = iMapped
+        changedElements[i] = randIdMapped
+    return [changedElements[i] for i in range(k)]
+
+# print(computeRandomSubset(7,3))
+
+# given n numbers, and probabilities that sum up to 1, P0,...,Pn-1.
+# Create a random number generator that produces a value, if the generator 
+# is called x times, then each number should appear approximately as many
+# times as it's probability * x
+import bisect
+
+def nonUniformRandomNumberGenerator(vals, probs,iterations=1):
+    for i in range(iterations):
+        sumOfProbabilities = list(itertools.accumulate(probs))
+        intervalId = bisect.bisect(sumOfProbabilities, random.random())
+        print(vals[intervalId])
+
+a = [1,2,3,4]
+p = [0.2,0.3,0.25,0.25]
+
+# nonUniformRandomNumberGenerator(a,p,10)
+
