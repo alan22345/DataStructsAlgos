@@ -146,3 +146,67 @@ def romanToDecimal(s):
 
     return functools.reduce(lambda val, i: val + (-T[s[i]] if T[s[i]] < T[s[i+1]] else T[s[i]]),
     reversed(range(len(s)-1)), T[s[-1]])
+
+print(romanToDecimal('XIVM'))
+# compute valid IPs
+# function must determine where to put commas
+
+def getValidIpAddresses(s):
+    def isValidPart(s):
+        return len(s) == 1 or (s[0] != '0' and int(s) <= 255)
+    result, parts = [], [None] * 4
+    for i in range (1, min(4,len(s))):
+        parts[0] = s[:i]
+        if isValidPart(parts[0]):
+            for j in range(1, min(len(s) -i,4)):
+                parts[1] = s[i:i+j]
+                if isValidPart(parts[1]):
+                    for k in range(1, min(len(s) - i - j, 4)):
+                        parts[2],parts[3] = s[i+j:i+k+j], s[i+j+k:]
+                        if isValidPart(parts[2]) and isValidPart(parts[3]):
+                            result.append('.'.join(parts))
+    return result
+
+#run length encoding
+# and decoding
+
+def decoding(s):
+    count, result = 0, []
+    for c in s:
+        if c.isdigit():
+            count = count * 10 + int(c)
+        else:
+            result.append(c * count)
+            count = 0
+    return ''.join(result)
+
+def encoding(s):
+    result, count = [], 1
+    for i in range(1, len(s) + 1):
+        if i == len(s) or s[i] != s[i -1]:
+            result.append(str(count) + s[i - 1])
+            count = 1
+        else:
+            count += 1
+    return ''.join(result)
+
+#find first occurence of a substring
+# Rabin Karp algorithm
+def findSubString(t,s):
+    if len(s) > len(t):
+        return -1
+    
+    BASE = 26
+    t_hash = functools.reduce(lambda h, c:h*BASE + ord(c), t[:len(s)], 0)
+    s_hash = functools.reduce(lambda h, c:h*BASE + ord(c), s, 0)
+    power_s = BASE **max(len(s) - 1, 0)
+
+    for i in range(len(s), len(t)):
+        if t_hash == s_hash and t[i - len(s):i] == s:
+            return i - len(s)
+        t_hash -= ord(t[i - len(s)]) * power_s
+        t_hash = t_hash * BASE + ord(t[i])
+    
+    if t_hash == s_hash and t[-len(s):] == s:
+        return len(t) - len(s)
+    return -1 
