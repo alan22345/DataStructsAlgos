@@ -1,6 +1,5 @@
 """
 Stacks are last in first out for inserts and deletes
-Queues are first in first out
 Stacks only support pushes and pops
 """
 import collections
@@ -77,3 +76,17 @@ def equivalentPath(path):
             pathNames.append(token)
     result = '/'.join(pathNames)
     return result[result.startswith('//'):]
+
+# gives a bunch of heights of buildings determine which buildings will get light
+
+def lightBuilding(seq):
+    buildingWithHeight = collections.namedtuple('BuildingWithHeight',('id','height'))
+    candidates = []
+    for buildingIds, buildingHeight in enumerate(seq):
+        while candidates and buildingHeight > candidates[-1].height:
+            candidates.pop()
+        candidates.append(buildingWithHeight(buildingIds, buildingHeight))
+    return [candidate.id for candidate in reversed(candidates)]
+    
+sequence = [5,4,3,7,5,4,8,3,9,12]
+print(lightBuilding(sequence))
