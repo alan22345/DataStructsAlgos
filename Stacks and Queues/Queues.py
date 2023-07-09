@@ -66,5 +66,3 @@ class CircularQueue:
     
     def size(self):
         return self._numQueueOfElements
-
-# implement a queue using stacks
