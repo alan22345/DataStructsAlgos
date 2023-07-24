@@ -121,3 +121,147 @@ def sumRootToLeaf(tree, partialPathSum = 0):
 
 # sumRootToLeaf(root)
 
+# does exist in sum in tree
+
+def hasPathSum(tree, remaining_weight):
+    if not tree:
+        return False 
+    if not tree.left and not tree.right:
+        return remaining_weight == tree.data
+    return (hasPathSum(tree.left, remaining_weight-tree.data)
+            or hasPathSum(tree.right, remaining_weight-tree.data))
+
+# inOrderTraversal
+
+def inOrderTraversal(tree):
+    s, result = [], []
+    
+    while s or tree:
+        if tree:
+            s.append(tree)
+            tree = tree.left
+        else:
+            tree = s.pop()
+            result.append(tree.data)
+            tree = tree.right
+    return result 
+
+#pre order traversal
+
+def preorderTraversal(tree):
+    path, result = [tree], []
+    while path:
+        curr = path.pop()
+        if curr: 
+            result.append(curr.data)
+            path += [curr.right, curr.left]
+    return result
+
+# find the kth node in an inorder traversal 
+
+def findKthNodeTree(tree, k):
+    while tree:
+        leftSize = tree.left.size if tree.left else 0
+        if leftSize + 1 < k:
+            k -= leftSize + 1
+            tree = tree.right
+        elif leftSize == k -1:
+            return tree
+        else:
+            tree = tree.left 
+    return None
+
+# find the successor, the successor is the node that appears directly after the given node in an inorder traversal
+
+def findSuccessor(node):
+    if node.right:
+        node = node.right
+        while node.left:
+            node = node.left
+        return node
+    while node.parent and node.parent.right is node:
+        node = node.parent
+
+    return node.parent
+
+# reconstruct a tree from traversal data. inorder and preorder traversal data
+
+def binaryTreeFromInorderPreorder(preorder, inorder):
+    nodeToInorderId = {data: i for i, data in enumerate(inorder)}
+
+    def binaryTreeFromPreorderInorderHelper(preorderStart, preorderEnd, inorderStart, inorderEnd):
+        if preorderEnd <= preorderStart or inorderEnd <= inorderStart:
+            return None
+        
+        rootInorderId = nodeToInorderId[preorder[preorderStart]]
+        leftSubtreeeSize = rootInorderId - inorderStart
+        return treeNode(
+            preorder[preorderStart],
+            binaryTreeFromPreorderInorderHelper(
+                preorderStart + 1, preorderStart + 1 + leftSubtreeeSize,
+                inorderStart, rootInorderId
+            ),
+            binaryTreeFromPreorderInorderHelper(
+                preorderStart + 1 + leftSubtreeeSize,
+                preorderEnd, rootInorderId + 1, inorderEnd)
+            )
+    return binaryTreeFromPreorderInorderHelper(0, len(preorder), 0, len(inorder))
+
+# reconstruct a binary tree from a preorder traversal with null if a child is empty
+def reconstructFromPreorder(preorder):
+    def reconstructPreorderHelper(preorderIter):
+        subtreeKey = next(preorderIter)
+        if subtreeKey is None:
+            return None
+        leftSubtree = reconstructPreorderHelper(preorderIter)
+        rightSubtree = reconstructPreorderHelper(preorderIter)
+        return treeNode(subtreeKey, leftSubtree, rightSubtree)
+    return reconstructPreorderHelper(iter(preorder))
+
+# given a binary tree compute linked list from the leaves of the binary tree
+
+def createListOfLeaves(tree):
+    if not tree:
+        return []
+    if not tree.left and not tree.right:
+        return [tree]
+    return createListOfLeaves(tree.left) + createListOfLeaves(tree.right)
+
+#compute the exterior of a binary tree
+
+def exteriorBinaryTree(tree):
+    def isLeaf(node):
+        return not node.left and not node.right
+    
+    def leftBoundaryAndLeaves(subtree, isBoundary):
+        if not subtree:
+            return []
+        return (([subtree] if isBoundary
+            or isLeaf(subtree) else []) + leftBoundaryAndLeaves(
+                subtree.left,isBoundary) + leftBoundaryAndLeaves(
+                    subtree.right, isBoundary and not subtree.left
+                ))
+    def rightBoundaryAndLeaves(subtree, isBoundary):
+        if not subtree:
+            return []
+        return (rightBoundaryAndLeaves(subtree.left, isBoundary and not subtree.right) +
+        rightBoundaryAndLeaves(subtree.right, isBoundary) + 
+        ([subtree] if isBoundary or isLeaf(subtree) else []))
+    
+    return ([tree] + leftBoundaryAndLeaves(tree.left, isBoundary=True) + 
+        rightBoundaryAndLeaves(tree.right, isBoundary=True)
+        if tree else [])
+
+def computeRightSiblingTree(tree):
+    def populateChildrenNextField(startNode):
+        while startNode and startNode.left:
+            
+            startNode.left.next = startNode.right
+            startNode.right.next = startNode.next and startNode.next.left
+            startNode = startNode.next
+        
+    while tree and tree.left:
+        populateChildrenNextField(tree)
+        tree = tree.left
+        
+
